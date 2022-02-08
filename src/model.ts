@@ -1,6 +1,6 @@
 export interface Todo{
      
-    id :number;
+    _id :string;
     todo:string;
     isDone:boolean;
 }

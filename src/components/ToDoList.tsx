@@ -2,7 +2,7 @@ import React from 'react';
 import { Todo } from '../model';
 import './Styles.css';
 
-import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
+import {  Droppable    } from "react-beautiful-dnd";
 import TodoCard from './TodoCard';
 interface Props {
 
@@ -13,9 +13,11 @@ interface Props {
 }
 const TodoList: React.FC<Props> = ({ todos, setTodos,  CompletedTodos,
   setCompletedTodos}: Props) => {
+  
+    
   return (
     <div className="container">
-  <Droppable droppableId="TodosList">
+  <Droppable droppableId="todos">
         {(provided, snapshot) => (
           <div
             className={`todos ${snapshot.isDraggingOver ? "dragactive" : ""}`}
@@ -28,7 +30,7 @@ const TodoList: React.FC<Props> = ({ todos, setTodos,  CompletedTodos,
                 index={index}
                 todos={todos}
                 todo={todo}
-                key={todo.id}
+                key={todo._id}
                 setTodos={setTodos}
               />
             ))}
@@ -37,7 +39,7 @@ const TodoList: React.FC<Props> = ({ todos, setTodos,  CompletedTodos,
         )}
       </Droppable>
 
-      <Droppable droppableId='TodosRemove'>
+      <Droppable droppableId='done'>
       {(provided, snapshot) => (
           <div
             ref={provided.innerRef}
@@ -52,7 +54,7 @@ const TodoList: React.FC<Props> = ({ todos, setTodos,  CompletedTodos,
                 index={index}
                 todos={CompletedTodos}
                 todo={todo}
-                key={todo.id}
+                key={todo._id}
                 setTodos={setCompletedTodos}
               />
             ))}

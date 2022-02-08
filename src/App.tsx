@@ -1,28 +1,61 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import InputField from './components/InputField';
 import TodoList from './components/ToDoList';
 import { Todo } from './model';
-
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
-
+import CrudService from './services/Crud.service'; 
+const API = "http://localhost:3001/tasks/"
 
 const App: React.FC = () => {
   const [todo, setTodo] = useState<string>("");
   const [todos, setTodos] = useState<Todo[]>([]);
   const [CompletedTodos, setCompletedTodos] = useState<Todo[]>([]);
+  const tasksService = new CrudService();
+ 
+  useEffect(() => {
+    
+   
+ 
+   
+    tasksService.getAll().then(res => { 
+          // setTodos(res.data)
+          // console.log(res.data);
+          const data=res.data as Todo[]
+          data.map((el:Todo)=>{
+            
+            
+      el.isDone?setCompletedTodos([...CompletedTodos,el]):setTodos([...todos,el])
+
+          })
+          console.log(CompletedTodos);
+          console.log(todos);
+          
+          return
+        })
+    return () => {
+     
+    };
+  },[] );
+  
+ 
+  
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
     if (todo) {
-      setTodos([...todos, { id: Date.now(), todo: todo, isDone: false }])
-      setTodo("")
+      const t={ _id: '', todo: todo, isDone: false }
+      tasksService.add(t)  .then(response => {
+        setTodos([...todos, response.data])
+        setTodo("")
+    })
+     
     }
 
   }
   const onDragEnd = (result: DropResult) => {
     const { destination, source } = result;
+console.log(result);
 
-    console.log(result);
 
     if (!destination) {
       return;
@@ -39,7 +72,7 @@ const App: React.FC = () => {
     let active = todos;
     let complete = CompletedTodos;
     // Source Logic
-    if (source.droppableId === "TodosList") {
+    if (source.droppableId === "todos") {
       add = active[source.index];
       active.splice(source.index, 1);
     } else {
@@ -48,26 +81,45 @@ const App: React.FC = () => {
     }
 
     // Destination Logic
-    if (destination.droppableId === "TodosList") {
+    if (destination.droppableId === "todos") {
       active.splice(destination.index, 0, add);
     } else {
       complete.splice(destination.index, 0, add);
     }
+ 
+    
+   
+      CompletedTodos.filter(td=>!td.isDone).map(td=>{
+        console.log(td,"comp");
+        
+        tasksService.setDone(td._id,!td.isDone).then(res=>{
 
+        })
+      })
+    
+     
+      todos.filter(td=>td.isDone).map(td=>{
+        tasksService.setDone(td._id,!td.isDone).then(res=>{
+
+        })
+      })
+    
+     
+     
     setCompletedTodos(complete);
     setTodos(active);
   };
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-    <div className="App">
-      <span className="heading">Taskify</span>
-      <InputField todo={todo} setTodo={setTodo} handleAdd={handleAdd}></InputField>
-      <TodoList
-        setTodos={setTodos} todos={todos}
-        CompletedTodos={CompletedTodos}
-        setCompletedTodos={setCompletedTodos}
+      <div className="App">
+        <span className="heading">Taskify</span>
+        <InputField todo={todo} setTodo={setTodo} handleAdd={handleAdd}></InputField>
+        <TodoList
+          setTodos={setTodos} todos={todos}
+          CompletedTodos={CompletedTodos}
+          setCompletedTodos={setCompletedTodos}
         ></TodoList>
-    </div>
+      </div>
     </DragDropContext>
   );
 }
