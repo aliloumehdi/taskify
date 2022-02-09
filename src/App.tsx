@@ -19,19 +19,19 @@ const App: React.FC = () => {
  
    
     tasksService.getAll().then(res => { 
-          // setTodos(res.data)
-          // console.log(res.data);
+          //  setTodos(res.data)
+      //     // console.log(res.data);
           const data=res.data as Todo[]
           data.map((el:Todo)=>{
             
-            
-      el.isDone?setCompletedTodos([...CompletedTodos,el]):setTodos([...todos,el])
+        
+      el.isDone?setCompletedTodos(CompletedTodos=>[...CompletedTodos,el]): setTodos(todos => [...todos, el])
 
           })
-          console.log(CompletedTodos);
-          console.log(todos);
+      //     console.log(CompletedTodos);
+      //     console.log(todos);
           
-          return
+           
         })
     return () => {
      
